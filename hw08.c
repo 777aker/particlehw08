@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
 	initparticles();
 
 	// ground shader
-	perlin_shader = CreateShaderProg("perlin.vert", "perlin.frag");
+	perlin_shader = CreateShaderProg("perlin.vert", NULL);
 
 	// geyser shader
 	geyser_shader = CreateShaderProgGeomAttr("geyser.vert", "geyser.geom", "geyser.frag", Name);
