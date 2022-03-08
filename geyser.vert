@@ -25,6 +25,6 @@ void main(void) {
 		// trying to make it darker based on distance
 		//gl_FrontColor /= length(gl_Vertex) / 100;
 		// done
-		gl_Position = gl_ModelViewProjectionMatrix*vert;
+		gl_Position = vert;
 	}
 }

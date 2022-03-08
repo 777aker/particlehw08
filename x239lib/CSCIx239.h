@@ -62,6 +62,7 @@ int  CreateNoise3D(int unit);
 int  CreateShaderProg(const char* vert,const char* frag);
 int  CreateShaderProgAttr(char* VertFile,char* FragFile,char* Name[]);
 int  CreateShaderProgGeom(const char* vert,const char* geom,const char* frag);
+int  CreateShaderProgGeomAttr(const char* vert, const char* geom, const char* frag, char* Name[]);
 
 //  Basic objects
 void SolidCube();

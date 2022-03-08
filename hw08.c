@@ -72,9 +72,6 @@ void initparticles() {
 		middlex = mprand(j, seed, 1, size / 2.0, -size / 4.0);
 		middlez = mprand(seed, j, 2, size / 2.0, -size / 4.0);
 		basestart = mprand(j, seed, 4, 2, 1);
-		//middlex = frand(size / 4.0, -size / 8.0);
-		//middlez = frand(size / 4.0, -size / 8.0);
-		//basestart = frand(2, 1);
 		// create a bunch of particles and populate the arrays
 		#pragma omp parallel for
 		// groups are 100 big so just iterate through 100 for this group
@@ -129,12 +126,18 @@ void display(GLFWwindow* window) {
 
 	// time for geysers
 	glUseProgram(geyser_shader);
+	// blend
+	glBlendFunc(GL_ONE, GL_ONE);
+	glEnable(GL_BLEND);
 	// every so often move our geysers
 	if ((int)floor(glfwGetTime()) % 6 == 0)
 		initparticles();
 	// send time to shader
 	id = glGetUniformLocation(geyser_shader, "time");
 	glUniform1f(id, glfwGetTime());
+	// send texture
+	id = glGetUniformLocation(geyser_shader, "circ");
+	glUniform1i(id, 0);
 	glPointSize(4);
 	// point to vertices and colors
 	glVertexPointer(3, GL_FLOAT, 0, geyser_vertices);
@@ -154,6 +157,7 @@ void display(GLFWwindow* window) {
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableVertexAttribArray(VELOCITY_ARRAY);
 	glDisableVertexAttribArray(START_TIME);
+	glDisable(GL_BLEND);
 
 	// turn off shader
 	glUseProgram(0);
@@ -262,14 +266,13 @@ int main(int argc, char* argv[]) {
 	initparticles();
 
 	// ground shader
-	perlin_shader = CreateShaderProg("perlin.vert", NULL);
+	perlin_shader = CreateShaderProg("perlin.vert", "perlin.frag");
 
 	// geyser shader
-	geyser_shader = CreateShaderProgAttr("geyser.vert", NULL,Name);
+	geyser_shader = CreateShaderProgGeomAttr("geyser.vert", "geyser.geom", "geyser.frag", Name);
 
-	// stars?
-
-	// clouds?
+	// geyser texture
+	LoadTexBMP("circ.bmp");
 
 	// event loop
 	ErrCheck("init");

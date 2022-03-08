@@ -169,3 +169,39 @@ int CreateShaderProgGeom(const char* vert,const char* geom,const char* frag)
    return prog;
 }
 
+int CreateShaderProgGeomAttr(const char* vert, const char* geom, const char* frag, char* Name[])
+{
+    //  Create program
+    int prog = glCreateProgram();
+    //  Create and compile vertex shader
+    if (vert) CreateShader(prog, GL_VERTEX_SHADER, vert);
+    //  Create and compile geometry shader
+#ifdef __APPLE__
+   //  For Apple use the GL 3.2 style
+    if (geom)
+    {
+        CreateShader(prog, GL_GEOMETRY_SHADER_EXT, geom);
+        //  This hard wires the geometry shader from a point to a quad
+        //  Works for nBody examples but not the most general case.
+        glProgramParameteriEXT(prog, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
+        glProgramParameteriEXT(prog, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
+        glProgramParameteriEXT(prog, GL_GEOMETRY_VERTICES_OUT_EXT, 4);
+    }
+#else
+    if (geom) CreateShader(prog, GL_GEOMETRY_SHADER, geom);
+#endif
+    //  Create and compile fragment shader
+    if (frag) CreateShader(prog, GL_FRAGMENT_SHADER, frag);
+    //  Set names
+    int k;
+    for (k = 0; Name[k]; k++)
+        if (Name[k][0])
+            glBindAttribLocation(prog, k, Name[k]);
+    ErrCheck("CreateShaderProg");
+    //  Link program
+    glLinkProgram(prog);
+    //  Check for errors
+    PrintProgramLog(prog);
+    //  Return name
+    return prog;
+}
